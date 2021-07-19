@@ -13,6 +13,10 @@ import java.util.Objects;
 
 public class HangyMain {
     public static void main(String[] args) throws IOException {
+        if (args.length == 0) {
+            System.err.println("args empty bitch");
+            System.exit(-1);
+        }
         HangyWorld world = loadFromJSON(Objects.requireNonNull(getJSONFromFile(new File(args[0]))));
     }
 
