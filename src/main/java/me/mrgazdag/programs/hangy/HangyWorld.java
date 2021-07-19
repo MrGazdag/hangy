@@ -16,7 +16,10 @@ public class HangyWorld {
     private final List<Hangy> ants;
 
     private double bestDistanceSoFar;
-    private List<HangyTarget> bestRouteSoFar;
+    private volatile List<HangyTarget> bestRouteSoFar;
+
+    private double lastGenBestDistanceSoFar;
+    private volatile List<HangyTarget> lastGenBestRouteSoFar;
 
     private int generation;
 
@@ -33,6 +36,7 @@ public class HangyWorld {
         for (int i = 0; i < antsPerGroup; i++) {
             ants.add(new Hangy(this));
         }
+        bestDistanceSoFar = Double.MAX_VALUE;
         generation = 0;
     }
 
@@ -64,18 +68,34 @@ public class HangyWorld {
         targets.add(target);
     }
 
+    public HangyTarget getStartNode() {
+        return startNode;
+    }
+
     public List<HangyTarget> getTargets() {
         return targets;
+    }
+
+    public void reset() {
+        this.generation = 0;
+        this.bestDistanceSoFar = Double.MAX_VALUE;
+        this.bestRouteSoFar = null;
+        this.lastGenBestDistanceSoFar = Double.MAX_VALUE;
+        this.lastGenBestRouteSoFar = null;
+        for (HangyTarget target : targets) {
+            target.reset();
+        }
     }
 
     public void completeGeneration() {
         generation++;
         for (HangyTarget target : targets) {
             target.clearVisits();
+            target.tickCurrentPheromone(this);
         }
 
-        double bestDistanceSoFar = 0;
-        List<HangyTarget> bestRouteSoFar = null;
+        lastGenBestDistanceSoFar = Double.MAX_VALUE;
+        lastGenBestRouteSoFar = null;
         for (Hangy ant : ants) {
             ant.reset(targets, startNode);
         }
@@ -86,17 +106,45 @@ public class HangyWorld {
         }
         for (Hangy ant : ants) {
             double dst = ant.getDistanceWalked();
-            if (dst > bestDistanceSoFar) {
-                bestDistanceSoFar = dst;
-                bestRouteSoFar = ant.getRoute();
+            if (dst < lastGenBestDistanceSoFar) {
+                lastGenBestDistanceSoFar = dst;
+                lastGenBestRouteSoFar = ant.getRoute();
             }
         }
-        StringJoiner sj = new StringJoiner(", ");
-        sj.add(this.targets.indexOf(startNode) + "[" + startNode.getName() + "]");
-        for (HangyTarget t : bestRouteSoFar) {
-            sj.add(this.targets.indexOf(t) + "[" + t.getName() + "]");
+        if (lastGenBestDistanceSoFar < this.bestDistanceSoFar) {
+            this.bestDistanceSoFar = lastGenBestDistanceSoFar;
+            this.bestRouteSoFar = lastGenBestRouteSoFar;
         }
 
-        System.out.println("generation " + generation + "'s best: [" + sj + "]");
+        StringJoiner sj = new StringJoiner(", ");
+        sj.add(this.targets.indexOf(startNode) + "[" + startNode.getName() + "]");
+        HangyTarget prev = startNode;
+        for (HangyTarget t : bestRouteSoFar) {
+            prev.addPheromoneToNextNode(t, 10);
+            sj.add(this.targets.indexOf(t) + "[" + t.getName() + "]");
+            prev = t;
+        }
+
+        //System.out.println("generation " + generation + "'s best: [" + sj + "] at distance " + distanceWorth);
+    }
+
+    public int getGeneration() {
+        return generation;
+    }
+
+    public double getBestDistanceSoFar() {
+        return bestDistanceSoFar;
+    }
+
+    public List<HangyTarget> getBestRouteSoFar() {
+        return bestRouteSoFar;
+    }
+
+    public double getLastGenBestDistanceSoFar() {
+        return lastGenBestDistanceSoFar;
+    }
+
+    public List<HangyTarget> getLastGenBestRouteSoFar() {
+        return lastGenBestRouteSoFar;
     }
 }

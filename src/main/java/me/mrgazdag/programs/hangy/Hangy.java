@@ -14,13 +14,13 @@ public class Hangy {
         this.world = world;
     }
 
-    public void reset(List<HangyTarget> targets, HangyTarget lastNode) {
+    public void reset(List<HangyTarget> targets, HangyTarget startNode) {
         this.targets = new ArrayList<>(targets);
         this.route = new ArrayList<>();
-        this.lastNode = lastNode;
-        this.originalLastNode = lastNode;
-        this.targets.remove(lastNode);
-        lastNode.visit(this);
+        this.lastNode = startNode;
+        this.originalLastNode = startNode;
+        this.targets.remove(startNode);
+        startNode.visit(this);
         this.distanceWalked = 0;
     }
     public List<HangyTarget> getRoute() {
@@ -36,7 +36,8 @@ public class Hangy {
         HangyTarget bestTarget = null;
         for (HangyTarget target : targets) {
             if (target.isVisited(this)) continue;
-            double desirability = Math.random() * Math.max(Math.pow(target.getCurrentPheromone(), world.getPheromoneWorth()), 1) * Math.pow(1/lastNode.distanceTo(target), world.getDistanceWorth());
+            double pheromone = Math.pow(lastNode.getPheromoneTowards(target), world.getPheromoneWorth());
+            double desirability = Math.random() * Math.max(pheromone, 1) * Math.pow(1/lastNode.distanceTo(target), world.getDistanceWorth());
             if (desirability > bestDesirability) {
                 bestTarget = target;
                 bestDesirability = desirability;
@@ -46,6 +47,7 @@ public class Hangy {
             //completed all nodes
             return;
         }
+        System.out.println("pheromone: " + lastNode.getPheromoneTowards(bestTarget));
         distanceWalked += lastNode.distanceTo(bestTarget);
         lastNode = bestTarget;
         bestTarget.visit(this);

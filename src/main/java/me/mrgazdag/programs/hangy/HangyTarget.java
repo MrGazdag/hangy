@@ -9,16 +9,16 @@ public class HangyTarget {
     private final double xPos;
     private final double yPos;
     private final String name;
-    private double currentPheromone;
     private Map<HangyTarget, Double> distanceMap;
+    private Map<HangyTarget, Double> pheromoneMap;
     private Set<Hangy> visited;
 
     public HangyTarget(double xPos, double yPos, String name) {
         this.xPos = xPos;
         this.yPos = yPos;
         this.name = name;
-        this.currentPheromone = 0;
         this.distanceMap = new HashMap<>();
+        this.pheromoneMap = new HashMap<>();
         this.visited = new HashSet<>();
     }
     public double distanceTo(HangyTarget other) {
@@ -56,15 +56,21 @@ public class HangyTarget {
         return yPos;
     }
 
-    public double getCurrentPheromone() {
-        return currentPheromone;
+    public void addPheromoneToNextNode(HangyTarget target, double pheromoneToAdd) {
+        pheromoneMap.put(target, pheromoneMap.getOrDefault(target, 0d) + pheromoneToAdd);
     }
 
-    public void setCurrentPheromone(float currentPheromone) {
-        this.currentPheromone = currentPheromone;
+    public double getPheromoneTowards(HangyTarget target) {
+        return pheromoneMap.getOrDefault(target, 0d);
     }
 
     public void tickCurrentPheromone(HangyWorld world) {
-        this.currentPheromone = Math.max(currentPheromone-world.getPheromoneEvaporationRate(), 0);
+        for (Map.Entry<HangyTarget, Double> entry : this.pheromoneMap.entrySet()) {
+            entry.setValue(Math.max(entry.getValue()*world.getPheromoneEvaporationRate(), 0));
+        }
+    }
+
+    public void reset() {
+        this.pheromoneMap.clear();
     }
 }

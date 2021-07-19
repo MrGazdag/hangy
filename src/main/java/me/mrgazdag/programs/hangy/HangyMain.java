@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class HangyMain {
     public static void main(String[] args) throws IOException {
@@ -17,15 +18,30 @@ public class HangyMain {
             System.err.println("args empty bitch");
             System.exit(-1);
         }
-        HangyWorld world = loadFromJSON(Objects.requireNonNull(getJSONFromFile(new File(args[0]))));
-        while(true) {
-            world.completeGeneration();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        HangyWorld world = createRandom(Objects.requireNonNull(getJSONFromFile(new File(args[0]))), 50);
+        Display display = new Display(world);
+        display.setVisible(true);
+    }
+
+    public static HangyWorld createRandom(JSONObject data, int points) {
+        JSONObject world = data.getJSONObject("world");
+        Random random = new Random();
+        List<HangyTarget> targetList = new ArrayList<>();
+        double worldWidth = world.getDouble("worldSizeX");
+        double worldHeight = world.getDouble("worldSizeY");
+        for (int i = 0; i < points; i++) {
+            targetList.add(new HangyTarget(worldWidth*random.nextDouble(), worldHeight*random.nextDouble(), null));
         }
+        return new HangyWorld(
+                targetList,
+                world.getDouble("worldSizeX"),
+                world.getDouble("worldSizeY"),
+                world.getDouble("pheromoneEvaporationRate"),
+                world.getDouble("pheromoneWorth"),
+                world.getDouble("distanceWorth"),
+                world.getInt("antsPerGroup"),
+                world.getInt("startNodeIndex")
+        );
     }
 
     public static JSONObject getJSONFromFile(File file) throws IOException {

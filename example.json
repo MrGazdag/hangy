@@ -5,8 +5,8 @@
         "antsPerGroup": 10,
         "pheromoneEvaporationRate": 0.3,
         "startNodeIndex": 0,
-        "pheromoneWorth": 2,
-        "distanceWorth": 1
+        "pheromoneWorth": 3,
+        "distanceWorth": 2
     },
     "targets": [
         {"x": 10, "y": 10},
