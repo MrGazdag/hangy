@@ -4,7 +4,9 @@
         "worldSizeY": 100,
         "antsPerGroup": 10,
         "pheromoneEvaporationRate": 0.3,
-        "startNodeIndex": 0
+        "startNodeIndex": 0,
+        "pheromoneWorth": 2,
+        "distanceWorth": 1
     },
     "targets": [
         {"x": 2.4, "y": 3.6},

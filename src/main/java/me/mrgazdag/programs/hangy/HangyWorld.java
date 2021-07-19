@@ -8,21 +8,36 @@ public class HangyWorld {
     private final double xSize;
     private final double ySize;
     private final double pheromoneEvaporationRate;
+    private final double pheromoneWorth;
+    private final double distanceWorth;
     private final int antsPerGroup;
     private final HangyTarget startNode;
     private final List<Hangy> ants;
 
-    public HangyWorld(List<HangyTarget> targets, double xSize, double ySize, double pheromoneEvaporationRate, int antsPerGroup, int startNodeIndex) {
+    private double bestDistanceSoFar;
+    private List<HangyTarget> bestRouteSoFar;
+
+    public HangyWorld(List<HangyTarget> targets, double xSize, double ySize, double pheromoneEvaporationRate, double pheromoneWorth, double distanceWorth, int antsPerGroup, int startNodeIndex) {
         this.targets = targets;
         this.xSize = xSize;
         this.ySize = ySize;
         this.pheromoneEvaporationRate = pheromoneEvaporationRate;
+        this.pheromoneWorth = pheromoneWorth;
+        this.distanceWorth = distanceWorth;
         this.antsPerGroup = antsPerGroup;
         this.startNode = targets.get(startNodeIndex);
         this.ants = new ArrayList<>();
         for (int i = 0; i < antsPerGroup; i++) {
             ants.add(new Hangy(this));
         }
+    }
+
+    public double getPheromoneWorth() {
+        return pheromoneWorth;
+    }
+
+    public double getDistanceWorth() {
+        return distanceWorth;
     }
 
     public double getXSize() {
@@ -49,12 +64,16 @@ public class HangyWorld {
         return targets;
     }
 
-    public void tick() {
+    public void completeGeneration() {
         for (HangyTarget target : targets) {
             target.clearVisits();
         }
+
+        double bestDistance = 0;
+        List<HangyTarget> bestRoute = null;
         for (Hangy ant : ants) {
             ant.reset(targets, startNode);
         }
+
     }
 }

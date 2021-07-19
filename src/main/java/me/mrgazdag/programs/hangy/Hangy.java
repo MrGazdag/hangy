@@ -8,6 +8,7 @@ public class Hangy {
     private List<HangyTarget> targets;
     private List<HangyTarget> route;
     private HangyTarget lastNode;
+    private HangyTarget originalLastNode;
     private double distanceWalked;
     public Hangy(HangyWorld world) {
         this.world = world;
@@ -17,8 +18,13 @@ public class Hangy {
         this.targets = new ArrayList<>(targets);
         this.route = new ArrayList<>();
         this.lastNode = lastNode;
+        this.originalLastNode = lastNode;
         this.targets.remove(lastNode);
+        lastNode.visit(this);
         this.distanceWalked = 0;
+    }
+    public List<HangyTarget> getRoute() {
+        return route;
     }
 
     public double getDistanceWalked() {
@@ -26,8 +32,23 @@ public class Hangy {
     }
 
     public void tick() {
-        double lx = lastNode.getXPos();
-        double ly = lastNode.getYPos();
-
+        double bestDesirability = 0;
+        HangyTarget bestTarget = null;
+        for (HangyTarget target : targets) {
+            if (target.isVisited(this)) continue;
+            double desirability = Math.random() * Math.pow(target.getCurrentPheromone(), world.getPheromoneWorth()) * Math.pow(lastNode.distanceTo(target), world.getDistanceWorth());
+            if (desirability > bestDesirability) {
+                bestTarget = target;
+                bestDesirability = desirability;
+            }
+        }
+        if (bestTarget == null) {
+            //completed all nodes
+            return;
+        }
+        distanceWalked += lastNode.distanceTo(bestTarget);
+        lastNode = bestTarget;
+        bestTarget.visit(this);
+        route.add(bestTarget);
     }
 }
