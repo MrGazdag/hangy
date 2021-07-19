@@ -1,0 +1,11 @@
+{
+    "world": {
+        "worldSizeX": 100,
+        "worldSizeY": 100,
+        "antsPerGroup": 10
+    },
+    "targets": [
+        {"x": 2.4, "y": 3.6},
+        {"x": 62.9, "y": 93.1, "name": "szar"}
+    ]
+}
