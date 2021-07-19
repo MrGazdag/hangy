@@ -2,7 +2,8 @@
     "world": {
         "worldSizeX": 100,
         "worldSizeY": 100,
-        "antsPerGroup": 10
+        "antsPerGroup": 10,
+        "pheromoneEvaporationRate": 0.3
     },
     "targets": [
         {"x": 2.4, "y": 3.6},
