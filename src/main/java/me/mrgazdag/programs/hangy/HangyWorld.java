@@ -2,7 +2,6 @@ package me.mrgazdag.programs.hangy;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class HangyWorld {
     private final List<HangyTarget> targets;
@@ -10,17 +9,19 @@ public class HangyWorld {
     private final double ySize;
     private final double pheromoneEvaporationRate;
     private final int antsPerGroup;
+    private final HangyTarget startNode;
     private final List<Hangy> ants;
 
-    public HangyWorld(List<HangyTarget> targets, double xSize, double ySize, double pheromoneEvaporationRate, int antsPerGroup) {
+    public HangyWorld(List<HangyTarget> targets, double xSize, double ySize, double pheromoneEvaporationRate, int antsPerGroup, int startNodeIndex) {
         this.targets = targets;
         this.xSize = xSize;
         this.ySize = ySize;
         this.pheromoneEvaporationRate = pheromoneEvaporationRate;
         this.antsPerGroup = antsPerGroup;
+        this.startNode = targets.get(startNodeIndex);
         this.ants = new ArrayList<>();
         for (int i = 0; i < antsPerGroup; i++) {
-            ants.add(new Hangy());
+            ants.add(new Hangy(this));
         }
     }
 
@@ -49,6 +50,11 @@ public class HangyWorld {
     }
 
     public void tick() {
-
+        for (HangyTarget target : targets) {
+            target.clearVisits();
+        }
+        for (Hangy ant : ants) {
+            ant.reset(targets, startNode);
+        }
     }
 }
