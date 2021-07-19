@@ -18,9 +18,16 @@ public class HangyMain {
             System.exit(-1);
         }
         HangyWorld world = loadFromJSON(Objects.requireNonNull(getJSONFromFile(new File(args[0]))));
+        while(true) {
+            world.completeGeneration();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    @SuppressWarnings("MismatchedQueryAndUpdateOfStringBuilder")
     public static JSONObject getJSONFromFile(File file) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(file));
         StringBuilder sb = new StringBuilder();
@@ -28,7 +35,7 @@ public class HangyMain {
             sb.append(br.readLine()).append("\n");
         }
         br.close();
-        return new JSONObject(br.toString());
+        return new JSONObject(sb.toString());
     }
 
     public static HangyWorld loadFromJSON(JSONObject json) {

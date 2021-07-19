@@ -44,6 +44,10 @@ public class HangyTarget {
         visited.clear();
     }
 
+    public String getName() {
+        return name;
+    }
+
     public double getXPos() {
         return xPos;
     }

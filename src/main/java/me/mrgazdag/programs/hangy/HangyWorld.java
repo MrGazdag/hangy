@@ -2,6 +2,7 @@ package me.mrgazdag.programs.hangy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class HangyWorld {
     private final List<HangyTarget> targets;
@@ -17,6 +18,8 @@ public class HangyWorld {
     private double bestDistanceSoFar;
     private List<HangyTarget> bestRouteSoFar;
 
+    private int generation;
+
     public HangyWorld(List<HangyTarget> targets, double xSize, double ySize, double pheromoneEvaporationRate, double pheromoneWorth, double distanceWorth, int antsPerGroup, int startNodeIndex) {
         this.targets = targets;
         this.xSize = xSize;
@@ -30,6 +33,7 @@ public class HangyWorld {
         for (int i = 0; i < antsPerGroup; i++) {
             ants.add(new Hangy(this));
         }
+        generation = 0;
     }
 
     public double getPheromoneWorth() {
@@ -65,15 +69,34 @@ public class HangyWorld {
     }
 
     public void completeGeneration() {
+        generation++;
         for (HangyTarget target : targets) {
             target.clearVisits();
         }
 
-        double bestDistance = 0;
-        List<HangyTarget> bestRoute = null;
+        double bestDistanceSoFar = 0;
+        List<HangyTarget> bestRouteSoFar = null;
         for (Hangy ant : ants) {
             ant.reset(targets, startNode);
         }
+        for (int i = 0; i < targets.size(); i++) {
+            for (Hangy ant : ants) {
+                ant.tick();
+            }
+        }
+        for (Hangy ant : ants) {
+            double dst = ant.getDistanceWalked();
+            if (dst > bestDistanceSoFar) {
+                bestDistanceSoFar = dst;
+                bestRouteSoFar = ant.getRoute();
+            }
+        }
+        StringJoiner sj = new StringJoiner(", ");
+        sj.add(this.targets.indexOf(startNode) + "[" + startNode.getName() + "]");
+        for (HangyTarget t : bestRouteSoFar) {
+            sj.add(this.targets.indexOf(t) + "[" + t.getName() + "]");
+        }
 
+        System.out.println("generation " + generation + "'s best: [" + sj + "]");
     }
 }

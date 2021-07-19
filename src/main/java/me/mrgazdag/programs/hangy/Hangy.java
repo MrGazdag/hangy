@@ -36,7 +36,7 @@ public class Hangy {
         HangyTarget bestTarget = null;
         for (HangyTarget target : targets) {
             if (target.isVisited(this)) continue;
-            double desirability = Math.random() * Math.pow(target.getCurrentPheromone(), world.getPheromoneWorth()) * Math.pow(lastNode.distanceTo(target), world.getDistanceWorth());
+            double desirability = Math.random() * Math.max(Math.pow(target.getCurrentPheromone(), world.getPheromoneWorth()), 1) * Math.pow(1/lastNode.distanceTo(target), world.getDistanceWorth());
             if (desirability > bestDesirability) {
                 bestTarget = target;
                 bestDesirability = desirability;
