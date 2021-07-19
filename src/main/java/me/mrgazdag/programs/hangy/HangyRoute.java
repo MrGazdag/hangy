@@ -23,7 +23,7 @@ public class HangyRoute {
                 if (last == null) {
                     last = target;
                 } else {
-                    currentDist += Math.sqrt(Math.pow(target.xPos()-last.xPos(), 2) + Math.pow(target.yPos()-last.yPos(), 2));
+                    currentDist += Math.sqrt(Math.pow(target.getXPos()-last.getXPos(), 2) + Math.pow(target.getYPos()-last.getYPos(), 2));
                 }
             }
             this.length = currentDist;
