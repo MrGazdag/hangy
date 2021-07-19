@@ -1,5 +1,8 @@
 package me.mrgazdag.programs.hangy;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringJoiner;
@@ -40,6 +43,10 @@ public class HangyWorld {
         generation = 0;
     }
 
+    public List<Hangy> getAnts() {
+        return ants;
+    }
+
     public double getPheromoneWorth() {
         return pheromoneWorth;
     }
@@ -77,6 +84,29 @@ public class HangyWorld {
         return targets;
     }
 
+    public JSONObject toJSON() {
+        JSONObject data = new JSONObject();
+        JSONObject world = new JSONObject();
+        world.put("worldSizeX", xSize);
+        world.put("worldSizeY", ySize);
+        world.put("antsPerGroup", antsPerGroup);
+        world.put("pheromoneEvaporationRate", pheromoneEvaporationRate);
+        world.put("startNodeIndex", targets.indexOf(startNode));
+        world.put("pheromoneWorth", pheromoneWorth);
+        world.put("distanceWorth", distanceWorth);
+        data.put("world", world);
+        JSONArray targets = new JSONArray();
+        for (HangyTarget target : this.targets) {
+            JSONObject nodeData = new JSONObject();
+            nodeData.put("x", target.getXPos());
+            nodeData.put("y", target.getYPos());
+            if (target.getName() != null) nodeData.put("name", target.getName());
+            targets.put(nodeData);
+        }
+        data.put("targets", targets);
+        return data;
+    }
+
     public void reset() {
         this.generation = 0;
         this.bestDistanceSoFar = Double.MAX_VALUE;
@@ -85,6 +115,9 @@ public class HangyWorld {
         this.lastGenBestRouteSoFar = null;
         for (HangyTarget target : targets) {
             target.reset();
+        }
+        for (Hangy ant : ants) {
+            ant.reset(targets, startNode);
         }
     }
 
@@ -106,6 +139,7 @@ public class HangyWorld {
             }
         }
         for (Hangy ant : ants) {
+            ant.tickLast();
             double dst = ant.getDistanceWalked();
             if (dst < lastGenBestDistanceSoFar) {
                 lastGenBestDistanceSoFar = dst;

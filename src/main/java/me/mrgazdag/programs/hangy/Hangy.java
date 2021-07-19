@@ -8,7 +8,7 @@ public class Hangy {
     private List<HangyTarget> targets;
     private List<HangyTarget> route;
     private HangyTarget lastNode;
-    private HangyTarget originalLastNode;
+    private HangyTarget originalStartNode;
     private double distanceWalked;
     public Hangy(HangyWorld world) {
         this.world = world;
@@ -18,9 +18,9 @@ public class Hangy {
         this.targets = new ArrayList<>(targets);
         this.route = new ArrayList<>();
         this.lastNode = startNode;
-        this.originalLastNode = startNode;
+        this.originalStartNode = startNode;
         this.targets.remove(startNode);
-        startNode.visit(this);
+        if (startNode != null) startNode.visit(this);
         this.distanceWalked = 0;
     }
     public List<HangyTarget> getRoute() {
@@ -52,5 +52,11 @@ public class Hangy {
         lastNode = bestTarget;
         bestTarget.visit(this);
         route.add(bestTarget);
+    }
+
+    public void tickLast() {
+        distanceWalked += lastNode.distanceTo(originalStartNode);
+        lastNode = originalStartNode;
+        route.add(originalStartNode);
     }
 }
