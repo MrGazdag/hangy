@@ -49,6 +49,8 @@ public class HangyMain {
                 world.getDouble("worldSizeX"),
                 world.getDouble("worldSizeY"),
                 world.getDouble("pheromoneEvaporationRate"),
+                world.getDouble("pheromoneWorth"),
+                world.getDouble("distanceWorth"),
                 world.getInt("antsPerGroup"),
                 world.getInt("startNodeIndex")
         );
