@@ -66,6 +66,8 @@ public class Display extends JFrame {
                 }
 
                 g.drawString("Generation " + world.getGeneration(), 0, g.getFontMetrics().getHeight());
+
+                g.drawString("Distance: " + world.getBestDistanceSoFar(), 0, height-g.getFontMetrics().getHeight());
             }
         });
         addKeyListener(new KeyAdapter() {
@@ -78,6 +80,10 @@ public class Display extends JFrame {
                     }
                 } else if (e.getKeyCode() == KeyEvent.VK_R) {
                     world.reset();
+                    repaint();
+                } else if (e.getKeyCode() == KeyEvent.VK_C) {
+                    world.clear();
+                    running = false;
                     repaint();
                 }
             }
@@ -105,7 +111,12 @@ public class Display extends JFrame {
         running = true;
         new Thread(() -> {
             while(running) {
-                world.completeGeneration();
+                try {
+                    world.completeGeneration();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    running = false;
+                }
                 repaint();
                 try {
                     Thread.sleep(20);

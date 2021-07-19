@@ -12,7 +12,7 @@ public class HangyWorld {
     private final double pheromoneWorth;
     private final double distanceWorth;
     private final int antsPerGroup;
-    private final HangyTarget startNode;
+    private HangyTarget startNode;
     private final List<Hangy> ants;
 
     private double bestDistanceSoFar;
@@ -65,6 +65,7 @@ public class HangyWorld {
     }
 
     public void addPoint(HangyTarget target) {
+        if (startNode == null) startNode = target;
         targets.add(target);
     }
 
@@ -146,5 +147,11 @@ public class HangyWorld {
 
     public List<HangyTarget> getLastGenBestRouteSoFar() {
         return lastGenBestRouteSoFar;
+    }
+
+    public void clear() {
+        targets.clear();
+        startNode = null;
+        reset();
     }
 }
